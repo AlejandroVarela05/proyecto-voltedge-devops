@@ -1,0 +1,10 @@
+fastapi==0.123.9
+uvicorn==0.38.0
+pydantic==2.12.5
+pydantic-core==2.41.5
+python-jose[cryptography]==3.5.0
+python-multipart==0.0.20
+passlib[argon2]==1.7.4
+argon2-cffi==25.1.0
+email-validator==2.3.0
+python-dotenv==1.2.1
