@@ -66,7 +66,7 @@ class ChargingService:
         )
         
         self.users[user.id] = user
-        print(f"✅ Usuario '{name}' registrado ({user_type}) con saldo inicial {saldo_inicial}€")
+        print(f"Usuario '{name}' registrado ({user_type}) con saldo inicial {saldo_inicial}€")
         return user
 
     def authenticate_user(self, email: str, password: str) -> Optional[User]:
@@ -107,7 +107,7 @@ class ChargingService:
         """Crea una nueva estación de carga"""
         station = Station(id, name, location)
         self.stations[id] = station
-        print(f"🏢 Estación '{name}' creada en {location}")
+        print(f"Estación '{name}' creada en {location}")
         return station
 
     def get_station(self, station_id: int) -> Optional[Station]:
@@ -122,7 +122,7 @@ class ChargingService:
         """Elimina una estación (solo admin)"""
         if station_id in self.stations:
             del self.stations[station_id]
-            print(f"🗑️ Estación {station_id} eliminada")
+            print(f"Estación {station_id} eliminada")
             return True
         return False
 
@@ -132,13 +132,13 @@ class ChargingService:
         """Añade un cargador a una estación"""
         station = self.get_station(station_id)
         if not station:
-            print("❌ Estación no encontrada.")
+            print("Estación no encontrada.")
             return None
         
         charger = Charger(charger_id, charger_type)
         station.add_charger(charger)
         self.chargers[charger_id] = charger
-        print(f"⚡ Cargador {charger_id} ({charger_type}) añadido a {station.name}")
+        print(f"Cargador {charger_id} ({charger_type}) añadido a {station.name}")
         return charger
 
     def get_charger(self, charger_id: int) -> Optional[Charger]:
@@ -157,16 +157,16 @@ class ChargingService:
         station = self.get_station(station_id)
 
         if not user:
-            print("❌ Usuario no encontrado.")
+            print("Usuario no encontrado.")
             return None
         
         if not station:
-            print("❌ Estación no encontrada.")
+            print("Estación no encontrada.")
             return None
 
         available = station.get_available_chargers()
         if not available:
-            print(f"❌ No hay cargadores disponibles en {station.name}.")
+            print(f"No hay cargadores disponibles en {station.name}.")
             return None
 
         charger = available[0]
@@ -181,7 +181,7 @@ class ChargingService:
         """Finaliza la sesión de carga de un usuario"""
         user = self.get_user_by_id(user_id)
         if not user:
-            print("❌ Usuario no encontrado.")
+            print("Usuario no encontrado.")
             return False
         
         user.end_session()
@@ -243,7 +243,7 @@ class ChargingService:
         """Inicia un mantenimiento"""
         m = self.maintenances.get(id_mantenimiento)
         if not m:
-            print("❌ Mantenimiento no encontrado.")
+            print("Mantenimiento no encontrado.")
             return None
         print(m.iniciar())
         return m
@@ -252,7 +252,7 @@ class ChargingService:
         """Completa un mantenimiento"""
         m = self.maintenances.get(id_mantenimiento)
         if not m:
-            print("❌ Mantenimiento no encontrado.")
+            print("Mantenimiento no encontrado.")
             return None
         print(m.marcar_completado(notas))
         return m

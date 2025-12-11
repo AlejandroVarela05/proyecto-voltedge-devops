@@ -96,9 +96,9 @@ class User:
             coste = kwh_consumidos * tarifa
             
             if self.descontar_saldo(coste):
-                print(f"✅ Cobrado: {coste:.2f}€ ({kwh_consumidos:.2f} kWh a {tarifa}€/kWh)")
+                print(f"Cobrado: {coste:.2f}€ ({kwh_consumidos:.2f} kWh a {tarifa}€/kWh)")
             else:
-                print(f"⚠️ Saldo insuficiente. Coste: {coste:.2f}€, Saldo: {self.saldo:.2f}€")
+                print(f"Saldo insuficiente. Coste: {coste:.2f}€, Saldo: {self.saldo:.2f}€")
             
             # Guardar en historial
             self.sessions_history.append(self.active_session)

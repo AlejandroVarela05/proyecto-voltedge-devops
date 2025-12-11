@@ -615,4 +615,12 @@ Para dudas, problemas o sugerencias:
 
 **⭐ Si este proyecto te ha sido útil, considera darle una estrella en GitHub!**
 
+<<<<<<< Updated upstream
 **⚡🚗 ¡Gracias por usar VoltEdge!**
+=======
+<<<<<<< HEAD
+**⚡🚗 ¡Gracias por usar VoltEdge!**
+=======
+**⚡🚗 ¡Gracias por usar VoltEdge!**
+>>>>>>> c85470cbada69d2b1fc8886d6f0c957b4d69a00c
+>>>>>>> Stashed changes
