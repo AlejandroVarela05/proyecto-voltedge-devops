@@ -597,11 +597,6 @@ Este proyecto es parte de un trabajo académico para la asignatura de Arquitectu
 ---
 
 **⭐ Si este proyecto te ha sido útil, considera darle una estrella en GitHub!**
-
-<<<<<<< Updated upstream
-**⚡🚗 ¡Gracias por usar VoltEdge!**
-=======
-<<<<<<< HEAD
 **⚡🚗 ¡Gracias por usar VoltEdge!**
 =======
 **⚡🚗 ¡Gracias por usar VoltEdge!**
