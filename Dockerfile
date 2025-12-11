@@ -2,7 +2,7 @@
 FROM python:3.12-slim
 
 # Metadata
-LABEL maintainer="<tuemail@example.com>"
+LABEL maintainer="alejandro.varela.01@uie.edu"
 LABEL description="VoltEdge - EV Charging Station Management API"
 LABEL version="1.0.0"
 
