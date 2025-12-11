@@ -38,7 +38,7 @@ USER voltedge
 EXPOSE 8000
 
 <<<<<<< Updated upstream
-# Health check (opcional pero profesional)
+# Health check
 =======
 # Health check
 >>>>>>> Stashed changes
