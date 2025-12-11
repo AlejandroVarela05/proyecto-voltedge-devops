@@ -37,11 +37,7 @@ USER voltedge
 # Exponer puerto de la API
 EXPOSE 8000
 
-<<<<<<< Updated upstream
-# Health check
-=======
-# Health check
->>>>>>> Stashed changes
+# Healthcheck para verificar que la API está funcionando
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')" || exit 1
 
