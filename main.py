@@ -671,4 +671,36 @@ def completar_mantenimiento(id_mantenimiento: int, completion_data: CompletarMai
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import webbrowser
+    from threading import Timer
+    
+    def open_browser():
+        """Abre el navegador automáticamente en la documentación."""
+        try:
+            webbrowser.open("http://localhost:8000/docs")
+        except Exception as e:
+            print(f"No se pudo abrir el navegador automáticamente: {e}")
+            print("Abre manualmente: http://localhost:8000/docs")
+    
+    # Abrir navegador después de que el servidor inicie
+    Timer(1.5, open_browser).start()
+    
+    # Mensajes de inicio
+    print("=" * 60)
+    print("VoltEdge API - Sistema de Gestión de Estaciones de Carga")
+    print("=" * 60)
+    print("Documentación Swagger: http://localhost:8000/docs")
+    print("Documentación ReDoc:   http://localhost:8000/redoc")
+    print("API Root:              http://localhost:8000")
+    print("=" * 60)
+    print("El navegador se abrirá automáticamente...")
+    print("Presiona CTRL+C para detener el servidor")
+    print("=" * 60)
+    
+    # Iniciar servidor
+    uvicorn.run(
+        app, 
+        host="127.0.0.1",  # localhost para desarrollo local
+        port=8000,
+        log_level="info"
+    )
