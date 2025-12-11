@@ -596,23 +596,6 @@ Este proyecto es parte de un trabajo académico para la asignatura de Arquitectu
 
 ---
 
-## 🙏 Agradecimientos
-
-Proyecto desarrollado como parte del curso de Arquitectura del Software en la UIE.
-
-Agradecimientos especiales al equipo de desarrollo y a el profesor por su guía en la implementación de prácticas DevOps modernas.
-
----
-
-## 📞 Soporte
-
-Para dudas, problemas o sugerencias:
-1. Abre un **Issue** en GitHub
-2. Revisa la **documentación Swagger** en `/docs`
-3. Consulta los logs del contenedor Docker
-
----
-
 **⭐ Si este proyecto te ha sido útil, considera darle una estrella en GitHub!**
 
 <<<<<<< Updated upstream
