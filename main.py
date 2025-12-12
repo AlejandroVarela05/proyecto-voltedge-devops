@@ -472,21 +472,108 @@ def obtener_cargador(charger_id: int) -> ChargerRead:
 
 # ==================== SESIONES ====================
 
-@app.post("/sessions", response_model=SessionRead, status_code=status.HTTP_201_CREATED, tags=["Sesiones"])
+@app.post("/sessions/iniciar-simple", response_model=SessionRead, status_code=status.HTTP_201_CREATED, tags=["Sesiones"])
+def iniciar_sesion_simple(station_id: int, current_user: UsuarioAutenticado = Depends(get_current_user)) -> SessionRead:
+    """
+    Inicia una nueva sesión de carga de forma simplificada.
+    
+    **Requiere:** Autenticación
+    **Parámetro:** Solo necesitas el station_id (el user_id se toma del token)
+    
+    Ejemplo: POST /sessions/iniciar-simple?station_id=1
+    """
+    session = voltedge_service.start_charging(current_user.id, station_id)
+    
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="No se pudo iniciar la sesión. Verifica disponibilidad de cargadores."
+        )
+    
+    duracion = session.get_duration()
+    kwh = duracion * 0.5
+    tarifa = session.user.get_tarifa()
+    coste = kwh * tarifa
+    
+    return SessionRead(
+        user_id=session.user.id,
+        user_name=session.user.name,
+        charger_id=session.charger.id,
+        start_time=session.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+        end_time=None,
+        duration_minutes=duracion,
+        kwh_consumidos=kwh,
+        coste=coste,
+        activa=True
+    )
+
+
+@app.post("/sessions/finalizar-simple", response_model=SessionRead, tags=["Sesiones"])
+def finalizar_sesion_simple(current_user: UsuarioAutenticado = Depends(get_current_user)) -> SessionRead:
+    """
+    Finaliza la sesión de carga activa del usuario autenticado.
+    
+    **Requiere:** Autenticación
+    **No requiere parámetros** (se usa el usuario del token automáticamente)
+    
+    Ejemplo: POST /sessions/finalizar-simple
+    """
+    user = voltedge_service.get_user_by_id(current_user.id)
+    
+    if not user or not user.active_session:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="No tienes ninguna sesión activa"
+        )
+    
+    session = user.active_session
+    voltedge_service.end_charging(current_user.id)
+    
+    duracion = session.get_duration()
+    kwh = duracion * 0.5
+    tarifa = user.get_tarifa()
+    coste = kwh * tarifa
+    
+    return SessionRead(
+        user_id=user.id,
+        user_name=user.name,
+        charger_id=session.charger.id,
+        start_time=session.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+        end_time=session.end_time.strftime("%Y-%m-%d %H:%M:%S") if session.end_time else None,
+        duration_minutes=duracion,
+        kwh_consumidos=kwh,
+        coste=coste,
+        activa=False
+    )
+
+
+@app.post("/sessions/iniciar", response_model=SessionRead, status_code=status.HTTP_201_CREATED, tags=["Sesiones"])
 def crear_sesion(session_data: SessionCreate, current_user: UsuarioAutenticado = Depends(get_current_user)) -> SessionRead:
     """
     Inicia una nueva sesión de carga.
     
     **Requiere:** Autenticación (usuario debe ser el que inicia)
+    
+    IMPORTANTE: El user_id en el body debe coincidir con el usuario autenticado,
+    o puedes omitirlo y se usará automáticamente el usuario autenticado.
     """
-    # Solo puede iniciar sesión para sí mismo
-    if session_data.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo puedes iniciar sesiones para ti mismo")
+    # Usar el user_id del usuario autenticado si no se proporciona o no coincide
+    # Los admins pueden iniciar sesiones para otros usuarios
+    user_actual = voltedge_service.get_user_by_id(current_user.id)
+    
+    if not user_actual.is_admin() and session_data.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Solo puedes iniciar sesiones para ti mismo"
+        )
     
     session = voltedge_service.start_charging(session_data.user_id, session_data.station_id)
     
     if not session:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudo iniciar la sesión. Verifica disponibilidad.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="No se pudo iniciar la sesión. Verifica disponibilidad de cargadores."
+        )
     
     duracion = session.get_duration()
     kwh = duracion * 0.5
@@ -512,15 +599,27 @@ def cerrar_sesion(close_data: CerrarSessionRequest, current_user: UsuarioAutenti
     Finaliza una sesión de carga activa.
     
     **Requiere:** Autenticación (usuario debe ser el que cierra)
+    
+    IMPORTANTE: El user_id en el body debe coincidir con el usuario autenticado,
+    o puedes omitirlo y se usará automáticamente el usuario autenticado.
     """
-    # Solo puede cerrar su propia sesión
-    if close_data.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo puedes cerrar tu propia sesión")
+    # Usar el user_id del usuario autenticado si no se proporciona o no coincide
+    # Los admins pueden cerrar sesiones para otros usuarios
+    user_actual = voltedge_service.get_user_by_id(current_user.id)
+    
+    if not user_actual.is_admin() and close_data.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Solo puedes cerrar tu propia sesión"
+        )
     
     user = voltedge_service.get_user_by_id(close_data.user_id)
     
     if not user or not user.active_session:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No tienes ninguna sesión activa")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="No hay ninguna sesión activa para este usuario"
+        )
     
     session = user.active_session
     voltedge_service.end_charging(close_data.user_id)
@@ -665,7 +764,6 @@ def completar_mantenimiento(id_mantenimiento: int, completion_data: CompletarMai
         frecuencia=getattr(maintenance, 'frecuencia', None),
         descripcion_fallo=getattr(maintenance, 'descripcion_fallo', None)
     )
-
 
 # ==================== EJECUCIÓN ====================
 
